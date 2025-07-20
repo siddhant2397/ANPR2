@@ -8,23 +8,29 @@ import cv2
 import re
 
 def uniform_format(plates):
-    # Keep only letters (A-Z, a-z) and numbers (0-9), discard all else, convert to upper case.
-    return [re.sub(r'[^A-Za-z0-9]', '', plate).upper() for plate in plates]
+    formatted = []
+    for plate in plates:
+        # Remove 'IND' from anywhere (case-insensitive)
+        plate_no_ind = re.sub(r'ind', '', plate, flags=re.IGNORECASE)
+        # Remove all non-alphanumeric characters
+        plate_alphanum = re.sub(r'[^A-Za-z0-9]', '', plate_no_ind)
+        # Convert to uppercase
+        formatted.append(plate_alphanum.upper())
+    return formatted
 
 def check_authorization(plate, authorized_df):
-    # plate is a string, authorized_df has 'NumberPlate' col
+    # plate is a single string, authorized_df has 'NumberPlate' column
     authorized_plates = uniform_format(authorized_df['NumberPlate'].astype(str).tolist())
-    plate_uniform = re.sub(r'[^A-Za-z0-9]', '', plate).upper()
+    plate_uniform = uniform_format([plate])[0]
     return "Authorized" if plate_uniform in authorized_plates else "Unauthorized"
 
 def ocr(img_np):
     reader = easyocr.Reader(['en'], gpu=False)
     result = reader.readtext(img_np)
-    # Join all OCR text regions for the cropped plate into one string
     text = " ".join([text for (_, text, _) in result])
     return text.strip()
 
-st.title('Automatic Number Plate Recognition')
+st.title('Vehicle Number Plate OCR & Authorization')
 
 # Secure API key from Streamlit secrets
 api_key = st.secrets["ROBOFLOW_API_KEY"]
@@ -71,7 +77,7 @@ if uploaded_file:
         st.session_state['extracted_plate'] = extracted_plate
 
         if extracted_plate:
-            st.success(f"Detected Plate: {extracted_plate}")
+            st.success(f"OCR Detected Plate: {extracted_plate}")
             st.image(cropped_img[:, :, ::-1], caption='Cropped Number Plate', use_container_width=False)
         else:
             st.warning("No text detected in number plate.")
@@ -119,3 +125,4 @@ if auth_file:
             )
 else:
     st.info("Please upload an Excel or CSV file of authorized number plates in the sidebar.")
+
