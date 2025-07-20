@@ -63,7 +63,7 @@ if uploaded_file is not None:
         st.subheader('Extracted Number Plate Text')
         st.success(text if text else "No text detected")
 
-        st.image(cropped_img[:, :, ::-1], caption='Cropped Number Plate', use_column_width=False)
+        st.image(cropped_img[:, :, ::-1], caption='Cropped Number Plate', use_container_width=False)
     else:
         st.warning("No number plate detected. Please try with a clearer image.")
 else:
