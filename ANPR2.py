@@ -96,7 +96,7 @@ if auth_file:
         st.subheader('Detected Plates Authorization Status')
         results_df = pd.DataFrame({'Number Plate': extracted_plates, 'Status': check_result})
         st.dataframe(results_df)
-        if check_result == "Authorized":
+        if check_result[0] == "Authorized":
             st.markdown(
                 f'<span style="color:green; font-size:2em; font-weight:bold;">AUTHORIZED</span>',
         unsafe_allow_html=True
