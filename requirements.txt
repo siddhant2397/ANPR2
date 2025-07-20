@@ -1,8 +1,6 @@
 ﻿streamlit
-langchain
-faiss-cpu
-PyMuPDF
-pandas
-unstructured
-sentence-transformers
-huggingface-hub
+opencv-python-headless
+easyocr
+inference-sdk
+Pillow
+numpy
