@@ -5,10 +5,14 @@ from PIL import Image
 import easyocr
 from inference_sdk import InferenceHTTPClient
 import cv2
+import re
 
 # Utility to convert number plates to a uniform format (uppercase, no spaces/hyphens)
+
+
 def uniform_format(plates):
-    return [plate.replace(' ', '').replace('-', '').upper() for plate in plates]
+    # Keep only letters (A-Z, a-z) and numbers (0-9), discard all else, convert to upper case.
+    return [re.sub(r'[^A-Za-z0-9]', '', plate).upper() for plate in plates]
 
 def check_authorization(check_plates, authorized_df):
     authorized_plates = uniform_format(authorized_df['NumberPlate'].astype(str).tolist())
