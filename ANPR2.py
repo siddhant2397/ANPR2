@@ -34,7 +34,7 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('RGB')
     img_np = np.array(image)[:, :, ::-1]  # PIL RGB to OpenCV BGR
 
-    st.image(image, caption='Uploaded Image', use_column_width=True)
+    st.image(image, caption="Sample", use_container_width=True)
 
     CLIENT = InferenceHTTPClient(
         api_url="https://serverless.roboflow.com",
