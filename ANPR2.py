@@ -56,7 +56,7 @@ if uploaded_file is not None:
         # Draw bounding box on original image
         display_img = img_np.copy()
         cv2.rectangle(display_img, (x1, y1), (x2, y2), (0,255,0), 2)
-        st.image(display_img[:, :, ::-1], caption='Detected Number Plate', use_column_width=True)
+        st.image(display_img[:, :, ::-1], caption='Detected Number Plate', use_container_width=True)
 
         # OCR
         text = ocr(cropped_img)
