@@ -24,7 +24,7 @@ def ocr(img_np):
     text = " ".join([text for (_, text, _) in result])
     return text.strip()
 
-st.title('Vehicle Number Plate OCR & Authorization')
+st.title('Automatic Number Plate Recognition')
 
 # Secure API key from Streamlit secrets
 api_key = st.secrets["ROBOFLOW_API_KEY"]
@@ -71,7 +71,7 @@ if uploaded_file:
         st.session_state['extracted_plate'] = extracted_plate
 
         if extracted_plate:
-            st.success(f"OCR Detected Plate: {extracted_plate}")
+            st.success(f"Detected Plate: {extracted_plate}")
             st.image(cropped_img[:, :, ::-1], caption='Cropped Number Plate', use_container_width=False)
         else:
             st.warning("No text detected in number plate.")
