@@ -96,6 +96,17 @@ if auth_file:
         st.subheader('Detected Plates Authorization Status')
         results_df = pd.DataFrame({'Number Plate': extracted_plates, 'Status': check_result})
         st.dataframe(results_df)
+        if check_result == "Authorized":
+    st.markdown(
+        f'<span style="color:green; font-size:2em; font-weight:bold;">AUTHORIZED</span>',
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        f'<span style="color:red; font-size:2em; font-weight:bold;">UNAUTHORIZED</span>',
+        unsafe_allow_html=True
+    )
+
     
     # Manual override
     st.markdown("**Not satisfied with the detection? Enter number plates for manual check (one per line):**")
