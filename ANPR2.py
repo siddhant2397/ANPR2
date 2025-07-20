@@ -77,7 +77,7 @@ if uploaded_file:
         st.session_state['extracted_plate'] = extracted_plate
 
         if extracted_plate:
-            st.success(f"OCR Detected Plate: {uniform_format(extracted_plate)[0]}")
+            st.success(f"OCR Detected Plate: {extracted_plate}")
             st.image(cropped_img[:, :, ::-1], caption='Cropped Number Plate', use_container_width=False)
         else:
             st.warning("No text detected in number plate.")
