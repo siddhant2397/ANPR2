@@ -21,7 +21,8 @@ def uniform_format(plates):
 def check_authorization(plate, authorized_df):
     # plate is a single string, authorized_df has 'NumberPlate' column
     authorized_plates = uniform_format(authorized_df['NumberPlate'].astype(str).tolist())
-    plate_uniform = uniform_format([plate])[0]
+    plate_no_ind = re.sub(r'ind', '', plate, flags=re.IGNORECASE)
+    plate_uniform = re.sub(r'[^A-Za-z0-9]', '', plate_no_ind).upper()
     return "Authorized" if plate_uniform in authorized_plates else "Unauthorized"
 
 def ocr(img_np):
