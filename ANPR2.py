@@ -133,7 +133,10 @@ if auth_file:
                 '<span style="color:red; font-size:2em; font-weight:bold;">UNAUTHORIZED</span>',
                 unsafe_allow_html=True
             )
-    st.markdown(uniform_format(extracted_plate))
+    plate_no_ind = re.sub(r'ind', '', extracted_plate, flags=re.IGNORECASE)
+    plate_uniform = re.sub(r'[^A-Za-z0-9]', '', plate_no_ind).upper()
+        
+    st.markdown(plate_uniform)
     st.markdown("**Not satisfied with the detection? Enter number plate for manual check:**")
     manual_plate = st.text_input("Manual Input Plate (single plate):", "")
     if manual_plate:
