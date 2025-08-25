@@ -2,10 +2,17 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from PIL import Image
-import easyocr
+import io
+from azure.ai.formrecognizer import DocumentAnalysisClient
+from azure.core.credentials import AzureKeyCredential
 from inference_sdk import InferenceHTTPClient
 import cv2
 import re
+
+endpoint = st.secrets["COMPUTER_VISION_ENDPOINT"]
+key = st.secrets["COMPUTER_VISION_KEY"]
+cv_client = DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(key))
+
 
 def uniform_format(plates):
     formatted = []
@@ -26,9 +33,19 @@ def check_authorization(plate, authorized_df):
     return "Authorized" if plate_uniform in authorized_plates else "Unauthorized"
 
 def ocr(img_np):
-    reader = easyocr.Reader(['en'], gpu=False)
-    result = reader.readtext(img_np)
-    text = " ".join([text for (_, text, _) in result])
+    pil_img = Image.fromarray(cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB))
+    img_byte_arr = io.BytesIO()
+    pil_img.save(img_byte_arr, format='JPEG')
+    img_bytes = img_byte_arr.getvalue()
+
+    poller = cv_client.begin_analyze_document("prebuilt-read", img_bytes)
+    result = poller.result()
+
+    lines = []
+    for page in result.pages:
+        for line in page.lines:
+            lines.append(line.content)
+    text = " ".join(lines)
     return text.strip()
 
 st.title('Vehicle Number Plate OCR & Authorization')
@@ -51,8 +68,6 @@ extracted_plate = ""
 if uploaded_file:
     image = Image.open(uploaded_file).convert('RGB')
     img_np = np.array(image)[:, :, ::-1]  # PIL RGB → OpenCV BGR
-
-    st.image(image, caption='Uploaded Image', use_container_width=True)
 
     CLIENT = InferenceHTTPClient(
         api_url="https://serverless.roboflow.com",
