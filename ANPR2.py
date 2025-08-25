@@ -3,15 +3,15 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import io
-from azure.ai.formrecognizer import DocumentAnalysisClient
-from azure.core.credentials import AzureKeyCredential
+from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+from msrest.authentication import CognitiveServicesCredentials
 from inference_sdk import InferenceHTTPClient
 import cv2
 import re
 
 endpoint = st.secrets["COMPUTER_VISION_ENDPOINT"]
 key = st.secrets["COMPUTER_VISION_KEY"]
-cv_client = DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(key))
+cv_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(key))
 
 
 def uniform_format(plates):
@@ -37,16 +37,25 @@ def ocr(img_np):
     img_byte_arr = io.BytesIO()
     pil_img.save(img_byte_arr, format='JPEG')
     img_bytes = img_byte_arr.getvalue()
+    read_response = cv_client.read_in_stream(io.BytesIO(img_bytes), raw=True)
+    operation_location = read_response.headers["Operation-Location"]
+    operation_id = operation_location.split("/")[-1]
 
-    poller = cv_client.begin_analyze_document("prebuilt-read", img_bytes)
-    result = poller.result()
+    # Poll for the result
+    import time
+    while True:
+        read_result = cv_client.get_read_result(operation_id)
+        if read_result.status.lower() not in ['notstarted', 'running']:
+            break
+        time.sleep(1)
 
+    # Collect recognized text lines
     lines = []
-    for page in result.pages:
-        for line in page.lines:
-            lines.append(line.content)
-    text = " ".join(lines)
-    return text.strip()
+    if read_result.status == "succeeded":
+        for page in read_result.analyze_result.read_results:
+            for line in page.lines:
+                lines.append(line.text)
+    return " ".join(lines).strip()
 
 st.title('Vehicle Number Plate OCR & Authorization')
 
