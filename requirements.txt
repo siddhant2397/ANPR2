@@ -5,5 +5,7 @@ Pillow
 numpy
 pandas
 openpyxl
-azure-ai-formrecognizer
+azure-cognitiveservices-vision-computervision
+msrest
+
 
