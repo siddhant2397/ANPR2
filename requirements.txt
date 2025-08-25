@@ -1,10 +1,9 @@
 ﻿streamlit
 opencv-python-headless
-easyocr
 inference-sdk
 Pillow
 numpy
-torch
-torchvision
 pandas
 openpyxl
+azure-ai-formrecognizer
+
