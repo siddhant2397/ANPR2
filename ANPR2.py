@@ -133,7 +133,7 @@ if auth_file:
                 '<span style="color:red; font-size:2em; font-weight:bold;">UNAUTHORIZED</span>',
                 unsafe_allow_html=True
             )
-    st.markdown(extracted_plate)
+    st.markdown(uniform_format(extracted_plate))
     st.markdown("**Not satisfied with the detection? Enter number plate for manual check:**")
     manual_plate = st.text_input("Manual Input Plate (single plate):", "")
     if manual_plate:
